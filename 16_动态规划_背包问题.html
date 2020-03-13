@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>动态规划</title>
+</head>
+<body>
+<script>
+  /* 
+     三种商品 {手机：1500， 占用空间：1} {平板：2000  3} {笔记本： 3000 4}
+     背包容量： 4
+     要求: 1.每样商品只能放一次
+          2. 计算最大价值  
+  */
+  function backpackDynamic(obj1, obj2, obj3, n) {
+    let v = []
+    let w = []
+    let b = new Array(4)
+
+    for (let i = 0; i < b.length; i ++) {
+      b[i] = []
+      console.log(i)
+    }
+
+    v.push(obj1.value, obj2.value, obj3.value)
+    w.push(obj1.room, obj2.room, obj3.room)
+    // 设 b[i][j]表示 前i种商品在 j容量下的最好值
+    for (let i = 0; i <= v.length; i ++) { //容量为0 
+      b[i][0] = 0
+    }
+    for (let i = 0; i <= n; i ++) { //商品为0
+      b[0][i] = 0
+    }
+                                                     
+    for (let i = 1; i <= v.length; i ++) {
+      for (let j = 1; j <= n; j ++) {                              
+        if (w[i-1] > j) { // 情况2 商品容量大于背包容量   
+          b[i][j] = b[i-1][j]
+        } else { // 情况3 商品容量小于背包容量 有剩余
+          b[i][j] = Math.max(b[i-1][j], v[i-1] + b[i-1][j-w[i-1]])
+        }
+      }
+    }
+    console.log(b)
+    return b[v.length][n]
+  }
+
+
+  let phone = {
+    value: 1500,
+    room: 1
+  }
+  let ipad = {
+    value: 2000,
+    room: 3
+  }
+  let computer = {
+    value: 3000,
+    room: 4
+  }
+
+  let best = backpackDynamic(phone, ipad, computer, 4)
+  console.log(best)
+</script>
+</body>
+</html>
