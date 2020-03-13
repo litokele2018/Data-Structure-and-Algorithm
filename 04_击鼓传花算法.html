@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script src="./03_队列的实现.js"></script>
+  <script>
+    // 方法一 
+    function Jgch(personNum, count) {
+      let queue = new Queue()
+      let _count = 0
+      let front = ''
+      for (let i = 0; i < personNum; i ++) {
+        queue.enQueue(i)
+      }
+      while(true) {
+        front = queue.front()
+        queue.delQueue()
+        _count ++
+        if (_count === count) {
+          _count = 0
+          if (queue.size() === 1) {
+            break
+          }
+        } else {
+          queue.enQueue(front)
+        }
+      }
+      return queue.front()
+    }
+    console.log(Jgch(3, 5))
+
+
+    // 方法二 双重循环
+    function Jgch2(personNum, count) {
+      let queue = new Queue()
+      for (let i = 0; i < personNum; i ++) {
+        queue.enQueue(i)
+      }
+      while (queue.size() > 1) {
+        for (let i = 0; i < count - 1; i ++) {
+          //将前面count-1个删除后加入队列
+          queue.enQueue(queue.delQueue())
+        }
+        // 将第count个删除
+        queue.delQueue()
+      }
+      return queue.front()
+    }
+    console.log(Jgch2(3, 5))
+  </script>
+</body>
+</html>

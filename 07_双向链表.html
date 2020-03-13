@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    class Node{
+      constructor(item) {
+        this.item = item
+        this.prev = null
+        this.next = null
+      }
+    }
+
+    // 双向链表类
+    class DoublyLinkedList{
+      constructor() {
+        this.head = null
+        this.tail = null 
+        this.length = 0
+      }
+      // 1.append(item)
+      append(item) {
+        let newNode = new Node(item)
+        let current = this.head
+        if (this.length === 0) {
+          this.head = newNode
+          this.tail = newNode
+        } else {
+          while (current.next) {
+            current = current.next
+          }
+          current.next = newNode
+          newNode.prev = current
+          this.tail = newNode
+        }
+        this.length ++
+      }
+      // 2.toString()
+      toString() {
+        let s = ''
+        let current = this.head
+        while (current) {
+          s += current.item + ' '
+          current = current.next
+        }
+        return s
+      }
+      // 3.forwardString() 
+      forwardString() {
+        return this.toString()
+      }
+      // 4.backwardString() 
+      backwardString() {
+        let s = ''
+        let current = this.tail
+        while (current) {
+          s += current.item + ' '
+          current = current.prev
+        }
+        return s
+      }
+      // 5.insert(position, item)
+      insert(position, item) {
+        if (position < 0 || position > this.length) return false 
+        let newNode = new Node(item)
+        if (this.length === 0) {
+          this.head = newNode
+          this.tail = newNode
+        } else if (position === 0) {
+          newNode.next = this.head
+          this.head.prev = newNode
+          this.head = newNode
+
+        } else if (position === this.length) {
+          newNode.prev = this.tail
+          this.tail.next = newNode
+          this.tail = newNode
+        } else {
+          let current = this.head
+          let index = 0
+          while (index < position) {
+            current = current.next
+            index ++
+          }
+          current.prev.next = newNode
+          newNode.prev = current.prev
+          newNode.next = current
+          current.prev = newNode
+        }
+        this.length ++
+        return true
+      }
+      // 6.get(position)
+      get(position) {
+        if (position < 0 || position > this.length) return false 
+        let index,item,current
+        if (position > this.length / 2) {
+          index = this.length - 1
+          current = this.tail          
+          while (index < position) {
+            current = current.prev
+            index --
+          }
+          item = current.item
+        } else {
+          index = 0
+          current = this.head
+          while (index < position) {
+            current = current.next
+            index ++
+          }
+          item = current.item
+        }
+        return item
+      }
+      // 7.indexOf(item)
+      indexOf(item) {
+        let index = 0
+        let current = this.head
+        while (current) {
+          if(current.item === item) return index
+          current = current.next
+          index ++
+        }
+      }
+      // 8.update(position, item)
+      update(position, item) {
+        if (position < 0 || position > this.length) return false 
+        let current = this.head
+        let index = 0
+        while (index < position) {
+          current = current.next
+          index ++
+        }
+        //find position
+        current.item = item
+        return true
+      }
+      // 9.removeAt(position)
+      removeAt(position) {
+        if (position < 0 || position > this.length) return false 
+        if (position === 0) {
+          this.head.next.prev = null
+          this.head = this.head.next
+        } else if (position === this.length - 1) {
+          this.tail.prev.next = null
+          this.tail = this.tail.prev
+        } else {
+          let current = this.head
+          let index = 0
+          while (index < position) {
+            current = current.next
+            index ++ 
+          }
+          current.prev.next = current.next
+          current.next.prev = current.prev
+        }
+        this.length --
+        return true
+      }
+      // 10.remove(item)
+      remove(item) {
+        return this.removeAt(this.indexOf(item))
+      }
+      // 11.isEmpty()
+      isEmpty() {
+        return this.length === 0
+      }
+      // 12.size()
+      size() {
+        return this.length
+      }
+    }
+    let dblist = new DoublyLinkedList() 
+    dblist.append(0)
+    dblist.append(1)
+    dblist.append(2)
+    dblist.append(3)
+    dblist.append(4)
+    dblist.insert(0, 'start')
+    dblist.insert(2, 'mid')
+    dblist.insert(7, 'end')
+    console.log(dblist)
+    console.log(dblist.toString())
+  //   console.log('forward: ' + dblist.forwardString())
+  //   console.log('backward: ' + dblist.backwardString())
+   
+    // dblist.update(7, 7)
+    // dblist.removeAt(7)
+    console.log(dblist)
+    console.log(dblist.toString())
+    // console.log(dblist.get(0))
+    // console.log(dblist.get(1))
+    // console.log(dblist.get(7))
+    // console.log(dblist.indexOf('mid'))
+  // </script>
+</body>
+</html>

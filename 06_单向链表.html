@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // 链表
+  function LinkedList() {
+    this.head = null
+    this.length = 0
+    // 节点类
+    function Node(item) {
+      this.item = item
+      this.next = null
+    }
+    // 1.append(element)
+    LinkedList.prototype.append = function (item) {
+      let newNode = new Node(item)
+      if (this.length === 0) {
+        this.head = newNode
+      } else {
+        let current = this.head
+        while (current.next) {
+          current = current.next
+        }
+        current.next = newNode
+      }
+      this.length += 1
+    }
+    // 2.toString()
+    LinkedList.prototype.toString = function () {
+      let listString = ''
+      let current = this.head
+      while (current) {
+        listString += current.item + ' '
+        current = current.next
+      }
+      return listString
+    }
+    // 3.insert(position, element)
+    LinkedList.prototype.insert = function (position, item) {
+      let newNode = new Node(item)
+      //position check
+      if (position < 0 || position > this.length) return false
+      if(position === 0) {
+        newNode.next = this.head
+        this.head = newNode
+      } else {
+        let index = 0
+        let previous = null
+        let current = this.head
+        while (index < position) {
+          previous = current
+          current = current.next
+          index ++
+        }
+        previous.next = newNode
+        newNode.next = current
+      }
+      this.length ++ 
+      return true
+    }
+    // 4.get(position)
+    LinkedList.prototype.get = function (position) {
+      if (position < 0 || position >= this.length) throw '请输入正确的position'
+      let current = this.head
+      let index = 0 
+      while (index < position) {
+        current = current.next
+        index ++
+      }
+      return current.item
+    }
+    // 5.indexOf(element)
+    LinkedList.prototype.indexOf = function (item) {
+      let current = this.head
+      let index = 0
+      while (current) {
+        if (current.item === item) return index
+        current = current.next
+        index ++
+      }
+      return -1
+    }
+    // 6.update(position, element)
+    LinkedList.prototype.update = function (position, item) {
+      if (position < 0 || position >= this.length) throw 'position out of range'
+      let current = this.head
+      let index = 0
+      while (index < position) {
+        current = current.next
+        index ++
+      }
+      current.item = item
+      return true 
+    }
+    // 7.removeAt(position)
+    LinkedList.prototype.removeAt = function (position) {
+      if (position < 0 || position >= this.length) throw 'position out of range or wrong element was given'
+      let current = this.head
+      let previous = null
+      let index = 0
+      if (position === 0) {
+        this.head = current.next
+        return true
+      }
+      while (index < position) {
+        previous = current
+        current = current.next
+        index ++
+      }
+      previous.next = current.next
+      this.length -= 1
+      return true
+    }
+    // 8.remove(element)
+    LinkedList.prototype.remove = function (item) {
+      this.removeAt(this.indexOf(item))
+    }
+    // 9.isEmpty()
+    LinkedList.prototype.isEmpty = function () {
+      return this.length === 0
+    }
+    // 10.size()
+    LinkedList.prototype.size = function () {
+      return this.length
+    }
+  }                                                                                             
+  let list = new LinkedList() 
+  list.append('litokele')               
+  list.append('kele')
+  list.append('index')
+  list.insert(3, 'www')
+  list.insert(1, '111')
+  list.remove('111')
+  console.log(list.isEmpty())
+  console.log(list.size())
+  // list.removeAt(3)
+  // list.removeAt(0)
+  // list.update(1, '...')
+  // console.log(list.get(1))
+  // console.log(list.indexOf('kele'))
+  // console.log(list.indexOf('1'))
+
+  console.log(list)                                                                                                    
+  console.log(list.toString())                                                                                                    
+  </script>
+</body>
+</html>

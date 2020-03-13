@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <script>
+    //封装set
+    class Set {
+      constructor() {
+        this.items = {}
+      }
+      //  1.add(value)
+      add(value) {
+        if (this.items.hasOwnProperty(value)) return false
+        this.items[value] = value
+        return true
+      }
+      // 2.remove(value)
+      remove(value) {
+        if (this.has(value)) {
+          delete this.items[value]
+          return true
+        }
+        return false
+      }
+      // 3.has(value)
+      has(value) {
+        return this.items.hasOwnProperty(value)
+      }
+      // 4.clear()
+      clear() {
+        this.items = {}
+        return true
+      }
+      // 5.size()
+      size() {
+        return Object.keys(this.items).length
+      }
+      // 6.values()
+      values() {
+        return Object.keys(this.items)
+      }
+      // 7.并集
+      union(...othersSet) {
+        for (let item of othersSet) {
+          item.values().forEach(value => {
+            this.add(value)
+          })
+        }
+      }
+      // 8.交集
+      intersection(...othersSet) {
+        let allArray = this.values()
+        let interscetionArr = []
+        for (const item of othersSet) {
+          allArray.push(...item.values())
+        }
+        allArray.forEach(value1 => {
+          let count = 0
+          allArray.forEach(value2 => {
+            if (value1 === value2) {
+              count++
+              if (count === othersSet.length + 1 && interscetionArr.indexOf(value1) === (-1)) {
+                interscetionArr.push(value1)
+              }
+            }
+          })
+        })
+        console.log(allArray)
+        console.log(interscetionArr)
+        this.clear()
+        interscetionArr.forEach(item => {
+          this.items[item] = item
+        })
+      }
+      // 9.差集
+      difference(...othersSet) {
+        let newSet = new Set()
+        this.values().forEach(item => {
+          let flag = false
+          othersSet.forEach(set => {
+            if (set.has(item)) {
+              flag = true
+            }
+          })
+          if (!flag) newSet.add(item)
+        })
+        this.items = newSet.items
+        console.log(s.values())
+      }
+      // 10.子集
+      isChildSetOf(set) {
+        let flag = true
+        this.values().forEach(item => {
+          console.log(item)
+          if (!set.has(item)) {
+            flag = false
+          }
+        })
+        return flag
+      }
+    }
+    let s = new Set()
+    let s2 = new Set()
+    let s3 = new Set()
+    s.add('kele1')
+    s.add('kele2')
+    s.add('kele3')
+    s.add('kele4')
+    s.add('kele5')
+    s.add('kele6')
+    s2.add('kele1')
+    s2.add('kele3')
+    s2.add('kele5')
+    s3.add('kele1')
+    s3.add('kele3')
+    s3.add('kele4')
+    console.log(s.values())
+    console.log(s2.values())
+    console.log(s3.values())
+  </script>
+
+</body>
+
+</html>

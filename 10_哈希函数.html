@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <script>
+    /* 
+      1.哈希函数
+        功能： 
+        1) 将字符串转化为较大的数字,hashCode
+        2) 将较大的数字压缩到数组范围(大小)之内
+    */
+    function hashFunc(str, size) {
+      let hashCode = 0
+      // 计算较大值
+      for (let i in str) {
+        hashCode = hashCode * 37 + str.charCodeAt(i)
+      }
+      // 取余操作
+      let index = hashCode % size
+      return index
+    }
+    console.log(hashFunc('cats', 13), "cats") //12
+    console.log(hashFunc('dogs', 13), "dogs") //8
+    console.log(hashFunc('pigs', 13), "pigs") //5
+    console.log(hashFunc('birds', 13), "birds") //7
+    console.log(hashFunc('fish', 13), "fish") //11
+    console.log(hashFunc('mice', 13), "mouse") //12
+
+  </script>
+</body>
+
+</html>

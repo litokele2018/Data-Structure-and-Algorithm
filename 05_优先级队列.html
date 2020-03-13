@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // priority queue
+    class PriorityQueue{
+      constructor() {
+        this.items = [] 
+      }
+      enQueue(element, priority) {
+        let queueElement = new QueueElement(element, priority)
+        if (this.items.length === 0) {
+          this.items.push(queueElement)
+          return
+        } 
+        for (let i = 0; i < this.items.length; i ++) {
+          if (queueElement.priority < this.items[i].priority) {
+            // insert
+            this.items.splice(i, 0, queueElement)
+            return
+          }
+        }
+        // the biggest priority
+        this.items.push(queueElement)
+      }
+      delQueue() {
+        return this.items.shift()
+      }
+      front() {
+        return this.items[0]
+      }
+      rear() {
+        return this.items[this.items.length - 1]
+      }
+      size() {
+        return this.items.length
+      }
+      toString() {
+        let s = ''
+        this.items.forEach(item => {
+          s += item.element + '-' + item.priority + '  '
+        })
+        return s
+      }
+      isEmpty() {
+        return this.items.length === 0
+      }
+    }
+    // create element
+    class QueueElement{
+      constructor(element, priority) {
+        this.element = element
+        this.priority = priority
+      }
+    }
+
+    let pq = new PriorityQueue()
+    pq.enQueue('litokele', 1)
+    pq.enQueue('kele', 2)
+    pq.enQueue('ccc', 1.5)
+    pq.enQueue('zero', 0)
+    pq.enQueue('thousand', 1000)
+    pq.enQueue('three', 3)
+    pq.delQueue()
+    console.log(pq.toString())
+    console.log(pq)
+
+  </script>
+</body>
+</html>

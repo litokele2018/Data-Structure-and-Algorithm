@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图结构</title>
+</head>
+<body>
+  <script src="./03_队列的实现.js"></script>
+  <script>
+    function Graph() {
+      //顶点
+      this.vertexes = []
+      this.edges = {} //这里可以用dictionary 来实现
+
+
+      // method: 
+      // 1.add vertex
+      Graph.prototype.addVertex = function (...vertex) {
+        this.vertexes.push(...vertex)
+        for (let item of vertex) { //init edges : []
+          this.edges[item] = []
+        }
+      }
+      // 2.add edge
+      Graph.prototype.addEdge = function (v1, v2) { // edge between v1 and v2 / no direction
+        this.edges[v1].push(v2)
+        this.edges[v2].push(v1)
+      }
+      // 3.toString 
+      Graph.prototype.toString = function () {
+        // eg: a -> b c d
+        let e = ''
+        for (let item of this.vertexes) {
+          this.edges[item].forEach(edge => {
+            e += edge + ' '
+          })
+          console.log(`${item} -> ${e === ''? null: e}`)
+          e = ''
+        }
+      }
+      // 4.bfs 广度优先 use Queue
+        // utils  
+        Graph.prototype.initColor = function () {
+          let color = {}
+          for (let item of this.vertexes) {
+            color[item] = 'white' // not visited
+          }
+          return color
+        }
+      Graph.prototype.bfs = function (firstVertex, handler) { 
+        // white: no visited, grey: on handling, black: finish 
+        let color = this.initColor()
+        let q = new Queue() // queue
+        q.enQueue(firstVertex)
+        color[firstVertex] = 'grey'
+        while (!q.isEmpty()) {
+          let outQueue = q.delQueue()
+          // change color ->  grey
+          // search children
+          this.edges[outQueue].forEach(v => {
+            if (color[v] === 'white') { // keep unique
+              q.enQueue(v)
+              color[v] = 'grey' // once in : grey
+            }
+          })
+          // handle event
+          handler(outQueue)
+          // change color -> black -> finish
+          color[outQueue] = 'black'
+        }
+        console.log(color)
+      }
+      // 5.dfs 深度优先遍历
+        // util
+        Graph.prototype.dfsVertex = function (v, color, handler) {
+          color[v] = 'grey'
+          this.edges[v].forEach(item => {
+            if (color[item] === 'white') {
+              this.dfsVertex(item, color, handler)
+            }
+          })
+          handler(v)
+          color[v] = 'black'
+          return
+        }
+      Graph.prototype.dfs = function (firstVertex, handler) {
+        let color = this.initColor()
+        this.dfsVertex(firstVertex, color, handler)
+        console.log(color)
+      }
+
+    }
+
+    let g = new Graph() 
+    g.addVertex('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
+    g.addEdge('a', 'c')
+    g.addEdge('a', 'b')
+    g.addEdge('a', 'h')
+    g.addEdge('b', 'h')
+    g.addEdge('b', 'd')
+    g.addEdge('c', 'e')
+    g.addEdge('c', 'f')
+    g.addEdge('d', 'h')
+    g.addEdge('d', 'f')
+    g.addEdge('e', 'g')
+    g.addEdge('f', 'g')
+    console.log(g)
+    g.bfs('a', (v) => {
+      console.log(v)
+    })
+
+    g.dfs('a', (v) => {
+      console.log(v)
+    })
+  </script>
+</body>
+</html>

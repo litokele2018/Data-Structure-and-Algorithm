@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // 封装 二叉搜索树  BST binary search tree
+    function BinarySearchTree() {
+      // 属性
+      this.root = null
+      this.count = 0
+      let _this = this
+      let nodeValue ='' // 搜索时用
+
+
+      // 内部类
+      function Node(key, value) {
+        this.key = key
+        this.value = value
+        this.left = null
+        this.right = null
+      }
+
+      // 内部方法不向外暴露
+      function compareNode(node, newNode) {
+        if (node.key < newNode.key) { //向右
+          // 判断是否有子节点
+          if (node.right) { //有 继续比较
+            compareNode(node.right, newNode)
+          } else { //没有 插入
+            node.right = newNode
+            _this.count ++
+          }
+        } else if (node.key === newNode.key) { //如果key相同 进行修改操作
+          node.value = newNode.value
+        } else { // 向左
+          if (node.left) {
+            compareNode(node.left, newNode)
+          } else {
+            node.left = newNode
+            _this.count ++
+          }
+        }
+      }
+      function handlePreOrderTraversal(node, handler) {
+        if (node) {
+          // console.log(node.key)
+          handler(node)
+          // 先向左边遍历
+          handlePreOrderTraversal(node.left, handler)
+          
+          // 再向右遍历
+          handlePreOrderTraversal(node.right, handler) 
+        }  
+      }
+      function handleMidOrderTraversal(node, handler) {
+        if (node) {
+          // 先向左边遍历
+          handleMidOrderTraversal(node.left, handler)
+
+          handler(node)
+          // 再向右遍历
+          handleMidOrderTraversal(node.right, handler) 
+        } 
+      }
+      function handlerPostOrderTraversal(node, handler) {
+        if (node) {
+          handlerPostOrderTraversal(node.left, handler)
+          handlerPostOrderTraversal(node.right, handler)
+          handler(node)
+        }
+      }
+      function searchNode(node, key) {
+        if (!node) {
+          return 
+        }
+        if (key < node.key) { //向左
+          searchNode(node.left, key)
+        } else if (key > node.key) { // 向右
+          searchNode(node.right, key)
+        } else { //相等
+          nodeValue = node.value
+        }
+      }
+      // 获取后继
+      function getSuccessor(node) {
+        node = node.right
+        while (node.left) {
+          node = node.left
+        }
+        return node
+      }
+      
+
+
+      // 1.插入方法 递归
+      BinarySearchTree.prototype.insert = function (key, value) {
+        let newNode = new Node(key, value)
+        if (this.root === null) {
+          this.root = newNode
+          this.count ++
+        } else { // 根结点存在 并进行比较
+          compareNode(this.root, newNode)
+        }
+      }
+      // 2.先序遍历 递归
+      BinarySearchTree.prototype.preOrderTraversal = function (handler) {
+        handlePreOrderTraversal(this.root, handler)
+      }
+      // 3.中序遍历
+      BinarySearchTree.prototype.midOrderTraversal = function (handler) {
+        handleMidOrderTraversal(this.root, handler)
+      }
+      // 4.后序遍历
+      BinarySearchTree.prototype.postOrderTraversal = function (handler) {
+        handlerPostOrderTraversal(this.root, handler)
+      }
+      // 5. 最大 最小值
+      BinarySearchTree.prototype.max = function () {
+        let node = this.root
+        while (node.right) {
+          node = node.right
+        }
+        return node.key
+      }
+      BinarySearchTree.prototype.min = function () {
+        let node = this.root
+        while (node.left) {
+          node = node.left
+        }
+        return node.key
+      }
+      // 6. 搜索特定的值
+      BinarySearchTree.prototype.search = function (key) {
+        nodeValue = ''
+        // 递归
+        searchNode(this.root, key)
+        if (nodeValue === undefined || nodeValue) {
+          return nodeValue
+        } else {
+          return false
+        }
+        return nodeValue
+      }
+      // 7.删除方法
+      BinarySearchTree.prototype.delete = function (key) {
+        let current = this.root
+        let parent = null
+        let isLeft = null
+
+        // 1 先查找到该 key 值的结点
+        while (current.key !== key) {
+          if (key > current.key) {
+            parent = current
+            current = current.right
+          } else if (key < current.key) {
+            parent = current
+            current = current.left
+          } 
+          // 找到最后也没有找到 
+          if (current === null) return false
+        }
+
+
+        // 成功找到
+        if (parent && parent.left === current) {
+          isLeft = true
+        } else {
+          isLeft = false
+        }
+
+        // 情况1 删除的是叶子结点
+        if (!current.left && !current.right) {
+          if (current === this.root) {
+            this.root = null
+            this.count --
+            return true
+          }
+          if (isLeft) {
+            parent.left = null
+          } else {
+            parent.right = null
+          }
+        } else if ((current.left && !current.right) || (!current.left && current.right)) { 
+          //情况2 只有一个子结点 左或者右
+          if (current === this.root) {
+            if (current.left) {
+              this.root = current.left
+            } else {
+              this.root = current.right
+            }
+            this.count --
+            return true
+          }
+          if (isLeft) {
+            if (current.left) {
+              parent.left = current.left
+            } else {
+              parent.left = current.right
+            }
+          } else {
+            if (current.left) {
+              parent.right = current.left
+            } else {
+              parent.right = current.right
+            }
+          }
+        } else {
+          // 情况3 有两个子结点
+            // 特殊 删除的是根结点
+          if (current === this.root) {
+            // 这里就需要获取到 先驱 或 后继
+            let successor = getSuccessor(current)
+            //重新遍历 获得与successor相同的结点和他的pre
+            let cur = this.root
+            let pre = null
+            while (cur.key !== successor.key) {
+              if (cur.key > successor.key) {
+                pre = cur
+                cur = cur.left
+              } else {
+                pre = cur 
+                cur = cur.right
+              }
+            }
+            if (pre.left === cur) {
+              // 由于successor 是最小的 所以他下面只会有右结点
+              pre.left = cur.right
+            } else {
+              pre.right = cur.right
+            }
+            successor.left = this.root.left
+            successor.right = this.root.right
+
+            this.root = successor
+          } else { //不是根
+            let successor = getSuccessor(current)
+            let cur = this.root
+            let pre = null
+            while (cur.key !== successor.key) {
+              if (cur.key > successor.key) {
+                pre = cur
+                cur = cur.left
+              } else {
+                pre = cur 
+                cur = cur.right
+              }
+            }
+            if (pre.left === cur) {
+              // 由于successor 是最小的 所以他下面只会有右结点
+              pre.left = cur.right
+            } else {
+              pre.right = cur.right
+            }
+            if (isLeft) {
+              parent.left = successor
+            } else {
+              parent.right = successor
+            }
+            successor.left = current.left
+            successor.right = current.right
+          }
+        }
+        this.count --
+      }
+    }
+
+    let bt = new BinarySearchTree() 
+
+    bt.insert(11)
+    bt.insert(7)
+    bt.insert(5)
+    bt.insert(3, '22')
+    bt.insert(9)
+    bt.insert(8)
+    bt.insert(10)
+    bt.insert(15)
+    bt.insert(13)
+    bt.insert(12)
+    bt.insert(14)
+    bt.insert(20)
+    bt.insert(18)
+    bt.insert(19)
+    bt.insert(25)
+    console.log(bt)
+    bt.delete(15)
+    console.log(bt)
+
+
+
+    // bt.insert(3)
+    // bt.insert(2)
+    // bt.insert(1, 'kele')
+    // bt.insert(5, 'litokele')
+    // bt.insert(4)
+    // bt.insert(6)
+    // bt.insert(10)
+    // bt.insert(9)
+    
+    // console.log(bt)
+    // let str = ''
+    // bt.preOrderTraversal(node => str += node.key + ' ')
+    // console.log('先序' + str)
+
+    // str = ''
+    // bt.midOrderTraversal(function (node) {
+    //   str += node.key + ' '
+    // })
+    // console.log('中序' + str)
+    // str = ''
+    // bt.postOrderTraversal(node => str += node.key + ' ')
+    // console.log('后序' + str)
+    // console.log('最大值' + bt.max())
+    // console.log('最小值' + bt.min())
+    // console.log(bt.search(1))
+    // console.log(bt.search(5))
+    // console.log(bt.search(4))
+  </script>
+</body>
+
+</html>

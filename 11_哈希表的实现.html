@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    function HashTable() {
+      // 属性
+      this.storage = [] //用来存放元素的数组
+      this.count = 0 // 当前存放数据的个数
+      this.limit = 7 // 最大容量
+
+      // 1.哈希函数
+      HashTable.prototype.HashFunc = function (str, size) {
+        let hashCode = 0
+        for (let i in str) {
+          // 霍纳算法 
+          hashCode = 37 * hashCode + str.charCodeAt(i)
+        }
+        let index = hashCode % size
+        return index
+      }
+      // 2.插入 &  修改操作
+      HashTable.prototype.put = function (key, value) {
+        // 1) 获取index
+        let index = this.HashFunc(key, this.limit)
+
+        // 2) 获取对应index的bucket
+        let bucket = this.storage[index]
+        
+        // 3) 如果bucket没有 init
+        if (bucket === undefined) {
+          bucket = []
+          this.storage[index] = bucket
+        }
+        // 4) bucket存在, 对其进行遍历 判断有无相同的key值 如果 bucket 为[] 不会进行遍历
+        if (bucket.length !== 0) {
+          for (const item of bucket) {
+            if (item[0] === key) {
+              item[1] = value
+              return
+            }
+          }
+        }
+        // 5) bucket存在 并且bucket中没有该key值
+        bucket.push([key, value])
+        this.count ++
+        // 6) 进行扩容判断
+        if (this.count > this.limit * 0.75) {
+          this.resize(this.limit * 2)
+        }
+      }
+
+      // 3.获取操作
+      HashTable.prototype.get = function (key) {
+        // 1) 通过哈希函数获取index
+        let index = this.HashFunc(key, this.limit)
+        // 2) 通过index 判断bucket是否存在
+        let bucket = this.storage[index]
+          // 如果bucket不存在
+        if (bucket === undefined || bucket === []) return null
+        // 3) bucket存在 进行遍历
+        for (const item of bucket) {
+          if (item[0] === key) {
+            return item[1]
+          }
+        }
+        // 4) 遍历完后 仍然没有找到
+        return null
+      }
+      
+      // 4.删除方法
+      HashTable.prototype.remove = function (key) {
+        let index = this.HashFunc(key, this.limit)
+        let bucket = this.storage[index]
+
+        if (bucket === undefined || bucket === []) return false
+
+        for (const i in bucket) {
+          let tuple = bucket[i]
+          if (tuple[0] === key) {
+            let value = tuple[1]
+            bucket.splice(i, 1)
+            this.count --
+            // 判断是否需要 缩容
+            if (this.limit > 7 && this.count < this.limit * 0.25) {
+              this.resize(Math.floor(this.limit / 2)) 
+            }
+            return value
+          }
+        } 
+        
+        return false
+      }
+      // 5.是否为空
+      HashTable.prototype.isEmpty = function () {
+        return this.count === 0
+      }
+
+      // 6.size
+      HashTable.prototype.size = function () {
+        return this.count
+      }
+      // 7.扩容，缩容resize
+      HashTable.prototype.resize = function (newLimit) {
+        let oldStorage = this.storage
+        while (!this.isPrimeNumAdvance(newLimit)) {
+          newLimit ++
+        }
+        this.storage = []
+        this.limit = newLimit
+        this.count = 0
+
+        // 遍历所有的bucket
+        for (const bucket of oldStorage) {
+          if (bucket === undefined || bucket === []) {
+            continue // continue的作用是 跳过本次循环 执行下一次循环
+          } else {
+            bucket.forEach(item => {
+              this.put(item[0], item[1])
+            })
+          }
+        }
+      }
+      // 8. 判断是否是质数
+      HashTable.prototype.isPrimeNumAdvance = function (num) {
+        /*  
+          如果一个数可以被拆分为两个数的乘积形式 
+          如 16 = 4 * 4 则不是质数
+          所以两个数必须有一个小于sqrt(num)
+        */
+        let sqrt = Math.sqrt(num)
+        for (let i = 2; i <= sqrt; i ++) {
+          if (num % i === 0) return false 
+        }
+        return true
+      }
+    }
+
+    let hashTable = new HashTable()
+
+    hashTable.put('kele', 12)
+    // hashTable.put('kele', 13)
+    hashTable.put('mouse', 18)
+    hashTable.put('cats', 18)
+    console.log(hashTable)
+    console.log('kele', hashTable.get('kele'))
+    console.log('cats', hashTable.get('cats'))
+    console.log('dogs', hashTable.get('dogs'))
+  </script>
+</body>
+</html>
